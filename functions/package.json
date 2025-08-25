@@ -1,19 +1,24 @@
 {
-  "name": "veronica-whatsapp-bot-firebase",
-  "version": "1.0.0",
-  "description": "WhatsApp Bot for Veronica's Psychology Clinic on Firebase Functions",
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "scripts": {
+    "lint": "echo 'Linting disabled'",
+    "build": "node -p '\"Nothing to build\"'",
+    "serve": "firebase emulators:start --only functions",
+    "shell": "firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "20"
+  },
   "main": "index.js",
   "dependencies": {
-    "dotenv": "^17.2.1",
-    "firebase-admin": "^11.10.1",
+    "dotenv": "^16.0.3",
+    "firebase-admin": "^11.8.0",
     "firebase-functions": "^4.3.1",
     "node-fetch": "^2.7.0"
   },
-  "devDependencies": {
-    "firebase-functions-test": "^3.1.0"
-  },
-  "private": true,
-  "engines": {
-    "node": "18"
-  }
+  "private": true
 }
