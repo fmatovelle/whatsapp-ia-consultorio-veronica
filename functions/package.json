@@ -4,6 +4,7 @@
   "description": "WhatsApp Bot for Veronica's Psychology Clinic on Firebase Functions",
   "main": "index.js",
   "dependencies": {
+    "dotenv": "^17.2.1",
     "firebase-admin": "^11.10.1",
     "firebase-functions": "^4.3.1",
     "node-fetch": "^2.7.0"

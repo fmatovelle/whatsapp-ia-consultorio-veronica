@@ -1,3 +1,6 @@
+// Load environment variables from .env file (for local development)
+require('dotenv').config();
+
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 
@@ -19,6 +22,61 @@ const escapeXml = (s = "") =>
         .replace(/"/g, "&quot;").replace(/'/g, "&apos;");
 
 const xml = (m) => `<?xml version="1.0" encoding="UTF-8"?><Response><Message>${escapeXml(m || "")}</Message></Response>`;
+
+// Enhanced environment variable loader
+function loadConfig() {
+    // For local development with .env file
+    if (process.env.OPENAI_API_KEY) {
+        return {
+            openai: {
+                api_key: process.env.OPENAI_API_KEY,
+                model: process.env.OPENAI_MODEL || "gpt-4o-mini"
+            },
+            twilio: {
+                account_sid: process.env.TWILIO_ACCOUNT_SID,
+                auth_token: process.env.TWILIO_AUTH_TOKEN,
+                whatsapp_from: process.env.TWILIO_WHATSAPP_FROM
+            },
+            clinic: {
+                name: process.env.CLINIC_NAME,
+                address: process.env.CLINIC_ADDRESS,
+                phone: process.env.CLINIC_PHONE,
+                email: process.env.CLINIC_EMAIL,
+                hours: process.env.CLINIC_HOURS,
+                services: process.env.CLINIC_SERVICES,
+                prices: process.env.CLINIC_PRICES
+            },
+            admin: {
+                whatsapp: process.env.ADMIN_WHATSAPP
+            },
+            emergency: {
+                disclaimer: process.env.EMERGENCY_DISCLAIMER
+            },
+            booking: {
+                link: process.env.BOOKING_LINK,
+                footer: process.env.BOOKING_FOOTER?.replace(/\\n/g, "\n")
+            },
+            typing: {
+                ms_faq: process.env.TYPING_MS_FAQ || "1200",
+                ms_ai: process.env.TYPING_MS_AI || "1200"
+            },
+            enable: {
+                admin_notify: process.env.ENABLE_ADMIN_NOTIFY?.toLowerCase() === "true"
+            },
+            ignore: {
+                whatsapps: process.env.IGNORE_WHATSAPPS || ""
+            },
+            log: {
+                incoming: process.env.LOG_INCOMING?.toLowerCase() === "true"
+            }
+        };
+    }
+
+    // For production (Firebase config)
+    return functions.config();
+}
+
+const config = loadConfig();
 
 // Session management using Firestore
 async function pushMessage(waId, role, content) {
@@ -103,7 +161,7 @@ async function alreadyProcessed(sid) {
 
 // Ignored numbers parsing
 function parseIgnored() {
-    const raw = (process.env.IGNORE_WHATSAPPS || "")
+    const raw = (config.ignore?.whatsapps || "")
         .split(/[,\s]+/)
         .map(s => s.trim())
         .filter(Boolean);
@@ -133,18 +191,18 @@ function isIgnored(from, waId) {
 
 // System prompt
 const SYS = () => `
-Eres la psicóloga clínica Verónica (Consultorio: "${process.env.CLINIC_NAME}", Quito — Hospital de los Valles, Cumbayá).
+Eres la psicóloga clínica Verónica (Consultorio: "${config.clinic?.name}", Quito — Hospital de los Valles, Cumbayá).
 Responde SIEMPRE en primera persona, con calidez y brevedad (2—4 líneas). Usa emojis de forma natural y moderada (🌿✨🧠🤝😊).
 Objetivo: resolver dudas y motivar a agendar una cita presencial u online por Zoom.
 
 Datos:
-• Dirección: ${process.env.CLINIC_ADDRESS}
-• Teléfono: ${process.env.CLINIC_PHONE}
-• Email: ${process.env.CLINIC_EMAIL}
-• Horarios: ${process.env.CLINIC_HOURS}
-• Servicios: ${process.env.CLINIC_SERVICES}
-• Precios: ${process.env.CLINIC_PRICES}
-• Emergencias: ${process.env.EMERGENCY_DISCLAIMER}
+• Dirección: ${config.clinic?.address}
+• Teléfono: ${config.clinic?.phone}
+• Email: ${config.clinic?.email}
+• Horarios: ${config.clinic?.hours}
+• Servicios: ${config.clinic?.services}
+• Precios: ${config.clinic?.prices}
+• Emergencias: ${config.emergency?.disclaimer}
 
 Estilo:
 • Cercano y empático; sin diagnósticos por chat.
@@ -166,9 +224,9 @@ const stripLead = (t = "") =>
     t.split("\n").filter(l => !l.trim().startsWith("LEAD:")).join("\n").trim();
 
 function footer() {
-    const f = (process.env.BOOKING_FOOTER || "").replace(/\\n/g, "\n").trim();
+    const f = (config.booking?.footer || "").trim();
     return f || (
-        `\n\n📅 Reserva aquí: ${process.env.BOOKING_LINK}\n` +
+        `\n\n📅 Reserva aquí: ${config.booking?.link}\n` +
         `🏠 Presencial 8:30—12:30 | 🌐 Online 14:30—18:30\n` +
         `🕐 Duración: 45 minutos | Frecuencia semanal\n` +
         `Si no ves un horario a tu medida, escríbeme y lo ajustamos.`
@@ -181,7 +239,7 @@ function faq(raw, showBooking = false) {
     const booking = showBooking ? footer() : "";
 
     if (/(emergencia|urgencia|suicid|autolesion|riesgo|crisis)/.test(q))
-        return `${process.env.EMERGENCY_DISCLAIMER}`;
+        return `${config.emergency?.disclaimer}`;
 
     // Saludo
     if (/^(hola|buenas|buenos dias|buenas tardes|buenas noches|hi|hello)\b/.test(q)) {
@@ -191,13 +249,13 @@ function faq(raw, showBooking = false) {
     }
 
     if (/(precio|costo|tarifa|cuanto vale|cuanto cuesta)/.test(q))
-        return `💳 Tarifas: ${process.env.CLINIC_PRICES}\n⏱️ La sesión individual dura ~45—50 min; en pareja/familia se recomienda sesión doble.${booking}`;
+        return `💳 Tarifas: ${config.clinic?.prices}\n⏱️ La sesión individual dura ~45—50 min; en pareja/familia se recomienda sesión doble.${booking}`;
 
     if (/(horario|hora|disponibilidad|agenda|turno|cuando puedes)/.test(q))
-        return `🗓️ Horarios: ${process.env.CLINIC_HOURS}\n¿Te comparto disponibilidad por aquí o prefieres ver la agenda?${booking}`;
+        return `🗓️ Horarios: ${config.clinic?.hours}\n¿Te comparto disponibilidad por aquí o prefieres ver la agenda?${booking}`;
 
     if (/(direccion|donde|ubicacion|como llegar|mapa|maps|hospital de los valles|cumbaya)/.test(q))
-        return `📍 Estoy en el Hospital de los Valles (Cumbayá). ${process.env.CLINIC_ADDRESS}\nTel: ${process.env.CLINIC_PHONE} · Email: ${process.env.CLINIC_EMAIL}${booking}`;
+        return `📍 Estoy en el Hospital de los Valles (Cumbayá). ${config.clinic?.address}\nTel: ${config.clinic?.phone} · Email: ${config.clinic?.email}${booking}`;
 
     if (/(quien eres|tu experiencia|sobre ti|sobre usted|conocerte|perfil|trayectoria)/.test(q))
         return `✨ Soy psicóloga clínica especializada en psicoterapia cognitiva (Albert Ellis Institute — NY) con más de 28 años de experiencia. Acompaño a adolescentes y adultos; también realizo formación clínica y peritajes. Atiendo en Quito y por Zoom 🌐.${booking}`;
@@ -248,15 +306,15 @@ function faq(raw, showBooking = false) {
 // Admin notification function
 async function notifyAdmins(data) {
     try {
-        const auth = "Basic " + Buffer.from(`${process.env.TWILIO_ACCOUNT_SID}:${process.env.TWILIO_AUTH_TOKEN}`).toString('base64');
-        const admins = (process.env.ADMIN_WHATSAPP || "").split(",").map(s => s.trim()).filter(Boolean);
+        const auth = "Basic " + Buffer.from(`${config.twilio?.account_sid}:${config.twilio?.auth_token}`).toString('base64');
+        const admins = (config.admin?.whatsapp || "").split(",").map(s => s.trim()).filter(Boolean);
         if (!admins.length) {
             console.log("No admin numbers configured");
             return;
         }
 
         const text =
-            `🔥 Nuevo lead para ${process.env.CLINIC_NAME}\n` +
+            `🔥 Nuevo lead para ${config.clinic?.name}\n` +
             `• Nombre: ${data.lead?.name || "—"}\n` +
             `• Motivo: ${data.lead?.reason || "—"}\n` +
             `• Ciudad: ${data.lead?.city || "—"}\n` +
@@ -264,7 +322,7 @@ async function notifyAdmins(data) {
             `• Modalidad: ${data.lead?.modality || "—"}\n` +
             `• Teléfono: ${data.lead?.phone || data.From || "—"}`;
 
-        const url = `https://api.twilio.com/2010-04-01/Accounts/${process.env.TWILIO_ACCOUNT_SID}/Messages.json`;
+        const url = `https://api.twilio.com/2010-04-01/Accounts/${config.twilio?.account_sid}/Messages.json`;
 
         console.log(`Notifying ${admins.length} admin(s) about new lead`);
 
@@ -279,7 +337,7 @@ async function notifyAdmins(data) {
                             "Content-Type": "application/x-www-form-urlencoded"
                         },
                         body: new URLSearchParams({
-                            From: process.env.TWILIO_WHATSAPP_FROM,
+                            From: config.twilio?.whatsapp_from,
                             To,
                             Body: text
                         })
@@ -324,14 +382,16 @@ const whatsappWebhook = functions.https.onRequest(async (req, res) => {
             const qNorm = normalize(Body);
 
             // Enhanced logging
-            console.log("Message details:", {
-                From,
-                WaId,
-                Body: Body.substring(0, 100),
-                MessageSid,
-                ProfileName,
-                timestamp: new Date().toISOString()
-            });
+            if (config.log?.incoming) {
+                console.log("Message details:", {
+                    From,
+                    WaId,
+                    Body: Body.substring(0, 100),
+                    MessageSid,
+                    ProfileName,
+                    timestamp: new Date().toISOString()
+                });
+            }
 
             // Check if user is ignored
             if (isIgnored(From, WaId)) {
@@ -371,7 +431,7 @@ const whatsappWebhook = functions.https.onRequest(async (req, res) => {
                 console.log("FAQ response found, sending quick reply");
                 await pushMessage(WaId, "user", Body);
                 await pushMessage(WaId, "assistant", "[FAQ]");
-                await sleep(Number(process.env.TYPING_MS_FAQ || "1200"));
+                await sleep(Number(config.typing?.ms_faq || "1200"));
 
                 res.set('Content-Type', 'application/xml');
                 res.status(200).send(xml(quick));
@@ -399,11 +459,11 @@ const whatsappWebhook = functions.https.onRequest(async (req, res) => {
                     fetch("https://api.openai.com/v1/chat/completions", {
                         method: "POST",
                         headers: {
-                            "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
+                            "Authorization": `Bearer ${config.openai?.api_key}`,
                             "Content-Type": "application/json",
                         },
                         body: JSON.stringify({
-                            model: process.env.OPENAI_MODEL || "gpt-4o-mini",
+                            model: config.openai?.model || "gpt-4o-mini",
                             temperature: 0.35,
                             max_tokens: 150,
                             top_p: 1,
@@ -466,13 +526,13 @@ const whatsappWebhook = functions.https.onRequest(async (req, res) => {
             await pushMessage(WaId, "assistant", replyForUser);
 
             // Add typing delay
-            await sleep(Number(process.env.TYPING_MS_AI || "1200"));
+            await sleep(Number(config.typing?.ms_ai || "1200"));
 
             res.set('Content-Type', 'application/xml');
             res.status(200).send(xml(replyForUser));
 
             // Notify admin about leads (asynchronous)
-            if (lead && (process.env.ENABLE_ADMIN_NOTIFY || "").toLowerCase() === "true") {
+            if (lead && config.enable?.admin_notify) {
                 console.log("Lead detected, notifying admins");
                 // Firebase Functions handle async operations differently
                 notifyAdmins({ From, lead }).catch(console.error);
