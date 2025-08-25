@@ -1,0 +1,12 @@
+{
+  "functions": {
+    "source": "functions",
+    "runtime": "nodejs18",
+    "timeout": "60s",
+    "memory": "256MB"
+  },
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  }
+}

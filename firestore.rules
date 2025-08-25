@@ -1,0 +1,19 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Sessions - only functions can read/write
+    match /sessions/{sessionId} {
+      allow read, write: if false; // Only server-side access
+    }
+
+    // Processed messages - only functions can read/write
+    match /processedMessages/{messageId} {
+      allow read, write: if false; // Only server-side access
+    }
+
+    // Admin collections (if you need them later)
+    match /admin/{document=**} {
+      allow read, write: if false; // Only server-side access
+    }
+  }
+}
