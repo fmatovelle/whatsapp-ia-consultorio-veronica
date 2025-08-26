@@ -103,7 +103,8 @@ firebase deploy
 ### 7. Configure Twilio Webhook
 Use your Firebase Function URL in Twilio:
 ```
-https://us-central1-your-project-id.cloudfunctions.net/whatsappWebhook
+https://europe-west1-veronica-whatsapp-bot.cloudfunctions.net/whatsappWebhook
+
 ```
 
 ---
