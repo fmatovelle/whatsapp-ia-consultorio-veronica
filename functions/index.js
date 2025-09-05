@@ -1,17 +1,12 @@
-// index.js — Firebase Functions Gen 2
+// index.js — Firebase Functions Gen 2 (Versión Simplificada Sin Firestore)
 require('dotenv').config();
 
 const { onRequest } = require('firebase-functions/v2/https');
 const { setGlobalOptions } = require('firebase-functions/v2');
-const functions = require('firebase-functions'); // solo para functions.config() si no usas .env
-const admin = require('firebase-admin');
-
-admin.initializeApp();
+const functions = require('firebase-functions');
 
 // Ajusta la región si corresponde (p. ej. 'europe-west1')
 setGlobalOptions({ region: 'europe-west1' });
-
-const db = admin.firestore();
 
 function sleep(ms) {
   return new Promise(function(resolve) {
@@ -105,97 +100,9 @@ function loadConfig() {
 
 const config = loadConfig();
 
-function pushMessage(waId, role, content) {
-  return new Promise(function(resolve) {
-    const sessionRef = db.collection('sessions').doc(waId);
-    sessionRef.get().then(function(sessionDoc) {
-      let history = [];
-      if (sessionDoc.exists) {
-        const data = sessionDoc.data();
-        if (data && data.history) {
-          history = data.history;
-        }
-      }
-
-      history.push({ role: role, content: content, timestamp: admin.firestore.FieldValue.serverTimestamp() });
-      if (history.length > 8) {
-        history = history.slice(-8);
-      }
-
-      return sessionRef.set({
-        history: history,
-        lastUpdated: admin.firestore.FieldValue.serverTimestamp()
-      }, { merge: true });
-    }).then(function() {
-      resolve();
-    }).catch(function(error) {
-      console.error('Error updating session:', error);
-      resolve();
-    });
-  });
-}
-
-function messagesForUser(waId) {
-  return new Promise(function(resolve) {
-    const sessionRef = db.collection('sessions').doc(waId);
-    sessionRef.get().then(function(sessionDoc) {
-      if (sessionDoc.exists) {
-        const data = sessionDoc.data();
-        if (data && data.history) {
-          resolve(data.history);
-          return;
-        }
-      }
-      resolve([]);
-    }).catch(function(error) {
-      console.error('Error getting messages:', error);
-      resolve([]);
-    });
-  });
-}
-
-function alreadyProcessed(sid) {
-  return new Promise(function(resolve) {
-    if (!sid) {
-      resolve(false);
-      return;
-    }
-
-    const now = Date.now();
-    const SID_TTL_MS = 5 * 60 * 1000;
-
-    const oldEntriesQuery = db.collection('processedMessages').where('timestamp', '<', now - SID_TTL_MS);
-    oldEntriesQuery.get().then(function(oldEntries) {
-      const batch = db.batch();
-      oldEntries.docs.forEach(function(doc) {
-        batch.delete(doc.ref);
-      });
-      if (oldEntries.docs.length > 0) {
-        return batch.commit();
-      }
-      return Promise.resolve();
-    }).then(function() {
-      const processedRef = db.collection('processedMessages').doc(sid);
-      return processedRef.get();
-    }).then(function(processedDoc) {
-      if (processedDoc.exists) {
-        console.log("Duplicate message detected: " + sid);
-        resolve(true);
-        return;
-      }
-
-      return db.collection('processedMessages').doc(sid).set({
-        timestamp: now,
-        createdAt: admin.firestore.FieldValue.serverTimestamp()
-      });
-    }).then(function() {
-      resolve(false);
-    }).catch(function(error) {
-      console.error('Error checking processed messages:', error);
-      resolve(false);
-    });
-  });
-}
+// Memoria temporal para sesiones (se reinicia con cada deploy)
+const tempSessions = new Map();
+const processedMessages = new Map();
 
 function parseIgnored() {
   const raw = config.ignore && config.ignore.whatsapps ? config.ignore.whatsapps : "";
@@ -241,101 +148,214 @@ function isIgnored(from, waId) {
   return false;
 }
 
-function SYS() {
-  const clinicName = config.clinic && config.clinic.name ? config.clinic.name : "Consultorio";
+function alreadyProcessed(sid) {
+  if (!sid) return false;
+  
+  // Limpiar mensajes viejos (más de 5 minutos)
+  const now = Date.now();
+  const TTL = 5 * 60 * 1000;
+  
+  for (const [key, timestamp] of processedMessages) {
+    if (now - timestamp > TTL) {
+      processedMessages.delete(key);
+    }
+  }
+  
+  if (processedMessages.has(sid)) {
+    console.log("Duplicate message detected: " + sid);
+    return true;
+  }
+  
+  processedMessages.set(sid, now);
+  return false;
+}
+
+function getMainMenu() {
+  const bookingLink = config.booking && config.booking.link ? config.booking.link : "";
+  
+  return "🌿 ¡Hola! Soy Verónica Espinosa Sánchez, Psicóloga - Mentora\n\n" +
+         "*1️⃣* Trayectoria: Verónica Espinosa e Isabella Matovelle\n" +
+         "*2️⃣* Horarios y costo\n" +
+         "*3️⃣* ¿Qué es la Psicoterapia Cognitiva individual-pareja-familiar y talleres?\n" +
+         "*4️⃣* Diagnóstico Psicológico-Neuropsicológico\n" +
+         "*5️⃣* Estimulación Cognitiva\n" +
+         "*6️⃣* Peritajes\n" +
+         "*7️⃣* ¿Lo positivo del zoom?\n" +
+         "*8️⃣* Citas: " + bookingLink + "\n\n" +
+         "🔒 *Confidencialidad garantizada*\n" +
+         "💳 *Pagos:* Transferencia, DeUna, Payphone PayPal\n\n"
+}
+
+function getMenuResponse(option) {
   const clinicAddress = config.clinic && config.clinic.address ? config.clinic.address : "";
   const clinicPhone = config.clinic && config.clinic.phone ? config.clinic.phone : "";
   const clinicEmail = config.clinic && config.clinic.email ? config.clinic.email : "";
   const clinicHours = config.clinic && config.clinic.hours ? config.clinic.hours : "";
-  const clinicServices = config.clinic && config.clinic.services ? config.clinic.services : "";
   const clinicPrices = config.clinic && config.clinic.prices ? config.clinic.prices : "";
-  const emergencyDisclaimer = config.emergency && config.emergency.disclaimer ? config.emergency.disclaimer : "";
-
-  return "Eres la psicóloga clínica Verónica (Consultorio: \"" + clinicName + "\", Quito — Hospital de los Valles, Cumbayá).\n" +
-         "Responde SIEMPRE en primera persona, con calidez y brevedad (2—4 líneas). Usa emojis de forma natural y moderada.\n" +
-         "Objetivo: resolver dudas y motivar a agendar una cita presencial u online por Zoom.\n\n" +
-         "Datos:\n" +
-         "• Dirección: " + clinicAddress + "\n" +
-         "• Teléfono: " + clinicPhone + "\n" +
-         "• Email: " + clinicEmail + "\n" +
-         "• Horarios: " + clinicHours + "\n" +
-         "• Servicios: " + clinicServices + "\n" +
-         "• Precios: " + clinicPrices + "\n" +
-         "• Emergencias: " + emergencyDisclaimer + "\n\n" +
-         "Estilo: Cercano y empático; sin diagnósticos por chat.";
-}
-
-function extractLead(t) {
-  if (!t) return null;
-  const m = t.match(/LEAD:\s*(\{[\s\S]*\})/);
-  if (!m) return null;
-  try {
-    return JSON.parse(m[1]);
-  } catch (e) {
-    return null;
-  }
-}
-
-function stripLead(t) {
-  if (!t) return "";
-  const lines = t.split("\n");
-  const filteredLines = [];
-  for (let i = 0; i < lines.length; i++) {
-    if (!lines[i].trim().startsWith("LEAD:")) {
-      filteredLines.push(lines[i]);
-    }
-  }
-  return filteredLines.join("\n").trim();
-}
-
-function footer() {
-  const bookingFooter = config.booking && config.booking.footer ? config.booking.footer : "";
-  if (bookingFooter) return bookingFooter;
-
   const bookingLink = config.booking && config.booking.link ? config.booking.link : "";
-  return "\n\n📅 Reserva aquí: " + bookingLink + "\n" +
-         "🏠 Presencial 8:30—12:30 | 🌐 Online 14:30—18:30\n" +
-         "🕐 Duración: 45 minutos | Frecuencia semanal";
+
+  switch(option) {
+    case "1":
+      return "👩‍⚕️ *Trayectoria Profesional*\n\n" +
+             "*Verónica Espinosa Sánchez*\n" +
+             "• Psicóloga Clínica con más de 28 años de experiencia\n" +
+             "• Especializada en Psicoterapia Cognitiva (Albert Ellis Institute - NY)\n" +
+             "• Atención a adolescentes y adultos\n" +
+             "• Formación clínica y peritajes psicológicos\n" +
+             "• Modalidades: Presencial (Quito) y Online (Zoom)\n\n" +
+             "*Isabella Matovelle*\n" +
+             "• Psicóloga colaboradora\n" +
+             "• Especialista en terapias complementarias\n\n" +
+             "✨ *Envía cualquier número (1-8) para más información*";
+
+    case "2":
+      return "⏰ *Horarios y Costos*\n\n" +
+             "*📅 Horarios:*\n" + clinicHours + "\n\n" +
+             "*💰 Tarifas:*\n" + clinicPrices + "\n\n" +
+             "*📍 Ubicación:*\n" + clinicAddress + "\n\n" +
+             "*☎️ Contacto:*\n" + clinicPhone + "\n" + clinicEmail + "\n\n" +
+             "✨ *Envía cualquier número (1-8) para más información*";
+
+    case "3":
+      return "🧠 *Psicoterapia Cognitiva*\n\n" +
+             "*Individual:* Identifica y modifica pensamientos que influyen en emociones y comportamientos. Técnicas claras para generar cambios reales en ansiedad, depresión, estrés.\n\n" +
+             "*Pareja:* Mejora la comunicación, resuelve conflictos y establece metas claras en la relación.\n\n" +
+             "*Familiar:* Fortalece vínculos familiares y resuelve dinámicas conflictivas.\n\n" +
+             "*Talleres:* Grupos terapéuticos especializados en temas específicos.\n\n" +
+             "📋 *Primera sesión:* Evaluación inicial, explicación del proceso y resolución de dudas.\n\n" +
+             "✨ *Envía cualquier número (1-8) para más información*";
+
+    case "4":
+      return "📋 *Diagnóstico Psicológico y Neuropsicológico*\n\n" +
+             "*Diagnóstico Psicológico:*\n" +
+             "• Estado emocional y personalidad\n" +
+             "• Relaciones interpersonales\n" +
+             "• Evaluación de bullying\n" +
+             "• Orientación vocacional\n" +
+             "• Trastornos de conducta\n" +
+             "• Modalidades: Presencial y Online\n\n" +
+             "*Diagnóstico Neuropsicológico:*\n" +
+             "• Entrevista clínica especializada\n" +
+             "• Pruebas originales y validadas\n" +
+             "• Informe detallado con recomendaciones\n" +
+             "• 2-4 sesiones presenciales en Quito\n\n" +
+             "✨ *Envía cualquier número (1-8) para más información*";
+
+    case "5":
+      return "🧠 *Estimulación y Rehabilitación Cognitiva*\n\n" +
+             "*Áreas de trabajo:*\n" +
+             "• Atención y concentración\n" +
+             "• Memoria (corto y largo plazo)\n" +
+             "• Lenguaje y comunicación\n" +
+             "• Razonamiento lógico\n" +
+             "• Funciones ejecutivas\n\n" +
+             "*Herramientas especializadas:*\n" +
+             "• NeuronUP (plataforma digital)\n" +
+             "• Decedario PRO\n" +
+             "• Planes personalizados\n\n" +
+             "*Dirigido a:* Personas con deterioro cognitivo, lesiones cerebrales, o que deseen mantener y mejorar sus capacidades mentales.\n\n" +
+             "✨ *Envía cualquier número (1-8) para más información*";
+
+    case "6":
+      return "⚖️ *Peritajes Psicológicos*\n\n" +
+             "*Servicios especializados:*\n" +
+             "• Peritajes psicológicos forenses\n" +
+             "• Evaluaciones neuropsicológicas legales\n" +
+             "• Pruebas originales y validadas\n\n" +
+             "*Características:*\n" +
+             "• Informes claros y precisos\n" +
+             "• Sustentables en audiencia\n" +
+             "• Metodología científica rigurosa\n" +
+             "• Experiencia en el ámbito legal\n\n" +
+             "*¿Necesitas un peritaje?* Agenda una primera cita para coordinar el proceso.\n\n" +
+             "✨ *Envía cualquier número (1-8) para más información*";
+
+    case "7":
+      return "💻 *Ventajas de las Sesiones por Zoom*\n\n" +
+             "*✅ Eficacia comprobada:*\n" +
+             "La evidencia científica muestra eficacia similar entre terapia virtual y presencial.\n\n" +
+             "*✅ Comodidad y accesibilidad:*\n" +
+             "• Desde tu hogar u oficina\n" +
+             "• Ahorro de tiempo de traslado\n" +
+             "• Horarios flexibles\n" +
+             "• Acceso desde cualquier ciudad\n\n" +
+             "*✅ Confidencialidad:*\n" +
+             "• Plataforma segura\n" +
+             "• Privacidad garantizada\n" +
+             "• Mismo nivel profesional\n\n" +
+             "*🌐 Horarios Zoom:* Lun-Vie 14:30-18:30; Dom solo urgencias\n\n" +
+             "✨ *Envía cualquier número (1-8) para más información*";
+
+    case "8":
+      return "📅 *Agendar Cita*\n\n" +
+             "*Para agendar tu sesión necesito:*\n" +
+             "• Nombre completo\n" +
+             "• Ciudad/País de residencia\n" +
+             "• Modalidad preferida (Presencial/Zoom)\n" +
+             "• 2 opciones de día y horario\n" +
+             "• Motivo de consulta (breve)\n\n" +
+             "*🔗 Agenda directa:* " + bookingLink + "\n\n" +
+             "*📍 Presencial:* 8:30-12:30 | Sáb 8:30-11:30\n" +
+             "*🌐 Online:* 14:30-18:30 | Dom solo urgencias\n" +
+             "*⏱️ Duración:* 45 minutos | Frecuencia semanal\n\n" +
+             "Si no ves un horario a tu medida, escríbeme y lo ajustamos.\n\n" +
+             "✨ *Envía cualquier número (1-8) para más información*";
+
+    default:
+      return null;
+  }
 }
 
-function faq(raw, showBooking) {
-  if (typeof showBooking === 'undefined') showBooking = false;
-
+function faq(raw) {
   const q = normalize(raw);
-  const booking = showBooking ? footer() : "";
 
+  // Check for menu option numbers FIRST
+  if (/^[1-8]$/.test(raw.trim())) {
+    return getMenuResponse(raw.trim());
+  }
+
+  // Emergency check
   if (/(emergencia|urgencia|suicid|autolesion|riesgo|crisis)/.test(q)) {
     const disclaimer = config.emergency && config.emergency.disclaimer ? config.emergency.disclaimer : "";
     return disclaimer;
   }
 
-  if (/^(hola|buenas|buenos dias|buenas tardes|buenas noches|hi|hello)\b/.test(q)) {
-    if (showBooking) {
-      return "¡Hola! Soy Verónica, psicóloga clínica. Trabajo con psicoterapia cognitiva para ansiedad, depresión, conflictos, pareja y familia. ¿Te gustaría agendar una sesión presencial en Cumbayá o por Zoom?" + booking;
-    } else {
-      return "¡Hola! Soy Verónica, psicóloga clínica. ¿En qué te ayudo hoy?";
-    }
+  // ANY greeting or menu request - ALWAYS show menu
+  if (/(^hola|^buenas|^buenos|^buen dia|^hi|^hello|^hey|saludos|que tal|como esta|como estas|estimada|doctora|psicologa|veronica|verónica|buenos dias|buenas tardes|buenas noches|buen dia|menu|inicio|opciones|servicios|que haces|que ofreces|informacion|ayuda|que puedes hacer|ola|buebas|buenoa|olis|holiwis)/.test(q)) {
+    return getMainMenu();
   }
 
-  if (/(precio|costo|tarifa|cuanto vale|cuanto cuesta)/.test(q)) {
-    const prices = config.clinic && config.clinic.prices ? config.clinic.prices : "";
-    return "Tarifas: " + prices + "\nLa sesión individual dura ~45—50 min; en pareja/familia se recomienda sesión doble." + booking;
+  // Quick responses for specific keywords - route to menu sections
+  if (/(precio|costo|tarifa|cuanto vale|cuanto cuesta|horario|hora|disponibilidad|agenda|turno|cuando puedes|direccion|donde|ubicacion|como llegar|mapa|maps|hospital de los valles|cumbaya)/.test(q)) {
+    return getMenuResponse("2");
   }
 
-  if (/(horario|hora|disponibilidad|agenda|turno|cuando puedes)/.test(q)) {
-    const hours = config.clinic && config.clinic.hours ? config.clinic.hours : "";
-    return "Horarios: " + hours + "\n¿Te comparto disponibilidad por aquí o prefieres ver la agenda?" + booking;
+  if (/(agendar|reservar|cita|turno|zoom|presencial)/.test(q)) {
+    return getMenuResponse("8");
   }
 
-  if (/(direccion|donde|ubicacion|como llegar|mapa|maps|hospital de los valles|cumbaya)/.test(q)) {
-    const address = config.clinic && config.clinic.address ? config.clinic.address : "";
-    const phone = config.clinic && config.clinic.phone ? config.clinic.phone : "";
-    const email = config.clinic && config.clinic.email ? config.clinic.email : "";
-    return "Estoy en el Hospital de los Valles (Cumbayá). " + address + "\nTel: " + phone + " · Email: " + email + booking;
+  if (/(terapia cognitiva|psicoterapia|que es la terapia)/.test(q)) {
+    return getMenuResponse("3");
   }
 
-  if (/(agendar|reservar|cita|agenda|turno|zoom|presencial)/.test(q)) {
-    return "¡Perfecto! Para agendar necesito: nombre, ciudad/país, modalidad (presencial/Zoom) y 2 opciones de día/horario." + booking;
+  if (/(diagnostico|evaluacion|test|pruebas)/.test(q)) {
+    return getMenuResponse("4");
+  }
+
+  if (/(estimulacion|rehabilitacion|cognitiva|memoria|atencion)/.test(q)) {
+    return getMenuResponse("5");
+  }
+
+  if (/(peritaje|legal|forense|judicial)/.test(q)) {
+    return getMenuResponse("6");
+  }
+
+  if (/(zoom|virtual|online|videollamada)/.test(q)) {
+    return getMenuResponse("7");
+  }
+
+  if (/(trayectoria|experiencia|quien eres|curriculum|sobre ti)/.test(q)) {
+    return getMenuResponse("1");
   }
 
   return null;
@@ -347,7 +367,7 @@ exports.whatsappWebhook = onRequest((req, res) => {
   res.set('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'GET') {
-    res.status(200).send('OK - WhatsApp Bot is running on Firebase Functions');
+    res.status(200).send('OK - WhatsApp Bot is running on Firebase Functions (Simplified Version)');
     return;
   }
 
@@ -363,7 +383,6 @@ exports.whatsappWebhook = onRequest((req, res) => {
   const WaId = req.body.WaId || From;
   const ProfileName = req.body.ProfileName || "";
   const MessageSid = req.body.MessageSid || req.body.SmsSid || req.body.SmsMessageSid;
-  const qNorm = normalize(Body);
 
   if (config.log && config.log.incoming) {
     console.log("Message details:", {
@@ -381,138 +400,48 @@ exports.whatsappWebhook = onRequest((req, res) => {
     return;
   }
 
-  alreadyProcessed(MessageSid).then(function(isDuplicate) {
-    if (isDuplicate) {
-      console.log("Duplicate message, skipping");
-      res.status(204).send('');
-      return;
-    }
+  if (alreadyProcessed(MessageSid)) {
+    console.log("Duplicate message, skipping");
+    res.status(204).send('');
+    return;
+  }
 
-    return messagesForUser(WaId);
-  }).then(function(currentHistory) {
-    const hadHistory = currentHistory.length > 0;
-    const isFirstMessage = !hadHistory;
-    const asksSchedule = /(agendar|reservar|cita|agenda|turno|horario|disponibilidad|cuando puedes|zoom|presencial)/.test(qNorm);
-    const showBooking = isFirstMessage || asksSchedule;
+  // Try FAQ first (including menu responses)
+  const quick = faq(Body);
+  if (quick) {
+    console.log("FAQ/Menu response found, sending quick reply");
 
-    console.log("Message analysis:", { asksSchedule: asksSchedule, showBooking: showBooking });
-
-    const quick = faq(Body, showBooking);
-    if (quick) {
-      console.log("FAQ response found, sending quick reply");
-
-      pushMessage(WaId, "user", Body).then(function() {
-        return pushMessage(WaId, "assistant", "[FAQ]");
-      }).then(function() {
-        const typingDelay = config.typing && config.typing.ms_faq ? config.typing.ms_faq : "1200";
-        return sleep(Number(typingDelay));
-      }).then(function() {
-        res.set('Content-Type', 'application/xml');
-        res.status(200).send(xml(quick));
-        console.log("FAQ response sent successfully");
-      }).catch(function(error) {
-        console.error("Error in FAQ flow:", error);
-        res.set('Content-Type', 'application/xml');
-        res.status(200).send(xml("Perdón, tuve un problema técnico. ¿Puedes repetir?"));
-      });
-      return;
-    }
-
-    console.log("No FAQ match, proceeding to OpenAI");
-
-    pushMessage(WaId, "user", Body).then(function() {
-      const msgs = [
-        { role: "system", content: SYS() }
-      ];
-
-      for (let i = 0; i < currentHistory.length; i++) {
-        msgs.push(currentHistory[i]);
-      }
-
-      msgs.push({ role: "system", content: "Número del usuario: " + From + ". Nombre de perfil: " + ProfileName });
-
-      console.log("Calling OpenAI with message count:", msgs.length);
-
-      const fetch = require('node-fetch');
-      const apiKey = config.openai && config.openai.api_key ? config.openai.api_key : "";
-      const model = config.openai && config.openai.model ? config.openai.model : "gpt-4o-mini";
-
-      return withTimeout(
-        fetch("https://api.openai.com/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            "Authorization": "Bearer " + apiKey,
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            model: model,
-            temperature: 0.35,
-            max_tokens: 150,
-            top_p: 1,
-            frequency_penalty: 0.2,
-            presence_penalty: 0,
-            messages: msgs
-          })
-        }),
-        12000
-      );
-    }).then(function(openaiResponse) {
-      if (!openaiResponse.ok) {
-        throw new Error("OpenAI API error: " + openaiResponse.status + " " + openaiResponse.statusText);
-      }
-      return openaiResponse.json();
-    }).then(function(j) {
-      let reply;
-      if (j && j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content) {
-        reply = j.choices[0].message.content.trim();
-      }
-
-      if (!reply) {
-        reply = 'Gracias por escribirme. Puedo ayudarte por Zoom o presencial en Cumbayá. ¿Prefieres agendar o resolver una duda primero?';
-      }
-
-      const wantsSchedule = /(agendar|reservar|horario|hora|disponibilidad|turno)/.test(qNorm);
-      if (!wantsSchedule) {
-        reply = reply.replace(/\b(hoy|mañana|lunes|martes|miércoles|jueves|viernes|sábado|domingo)\b[^.\n]{0,60}?\b(\d{1,2}(:\d{2})?\s?(am|pm)?)\b/gi, "")
-                     .replace(/\s{2,}/g, " ")
-                     .trim();
-      }
-
-      if (showBooking) {
-        reply += footer();
-      }
-
-      const lead = extractLead(reply);
-      const replyForUser = stripLead(reply);
-
-      console.log("Final response prepared:", {
-        hasLead: !!lead,
-        responseLength: replyForUser.length,
-        showsBooking: showBooking
-      });
-
-      return pushMessage(WaId, "assistant", replyForUser).then(function() {
-        const aiTypingDelay = config.typing && config.typing.ms_ai ? config.typing.ms_ai : "1200";
-        return sleep(Number(aiTypingDelay));
-      }).then(function() {
-        res.set('Content-Type', 'application/xml');
-        res.status(200).send(xml(replyForUser));
-        console.log("=== MESSAGE PROCESSED SUCCESSFULLY ===");
-      });
-    }).catch(function(err) {
-      console.error("Handler error:", err && err.message ? err.message : err);
-      const safe = "Perdón, tuve un inconveniente técnico. ¿Puedes repetir tu mensaje?";
+    const typingDelay = config.typing && config.typing.ms_faq ? config.typing.ms_faq : "1200";
+    sleep(Number(typingDelay)).then(function() {
       res.set('Content-Type', 'application/xml');
-      res.status(200).send(xml(safe));
+      res.status(200).send(xml(quick));
+      console.log("FAQ/Menu response sent successfully");
+    }).catch(function(error) {
+      console.error("Error in FAQ flow:", error);
+      res.set('Content-Type', 'application/xml');
+      res.status(200).send(xml("Perdón, tuve un problema técnico. Envía 'menu' para ver mis servicios."));
     });
+    return;
+  }
+
+  console.log("No FAQ/Menu match, using fallback");
+  
+  // Fallback response 
+  const fallbackResponse = 'Gracias por escribirme 🌿 ¿Te gustaría ver mi menú de servicios? Envía "hola" para conocer todas las opciones disponibles.';
+  
+  const aiTypingDelay = config.typing && config.typing.ms_ai ? config.typing.ms_ai : "1200";
+  sleep(Number(aiTypingDelay)).then(function() {
+    res.set('Content-Type', 'application/xml');
+    res.status(200).send(xml(fallbackResponse));
+    console.log("=== MESSAGE PROCESSED SUCCESSFULLY ===");
   }).catch(function(err) {
-    console.error("Handler error:", err && err.message ? err.message : err);
-    const safe = "Perdón, tuve un inconveniente técnico. ¿Puedes repetir tu mensaje?";
+    console.error("Handler error:", err);
+    const safe = "Perdón, tuve un inconveniente técnico. Envía 'hola' para ver mis servicios.";
     res.set('Content-Type', 'application/xml');
     res.status(200).send(xml(safe));
   });
 });
 
 exports.healthCheck = onRequest((req, res) => {
-  res.status(200).send('OK - WhatsApp Bot is running on Firebase Functions');
+  res.status(200).send('OK - WhatsApp Bot is running on Firebase Functions (Simplified)');
 });
