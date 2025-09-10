@@ -173,17 +173,21 @@ function alreadyProcessed(sid) {
 function getMainMenu() {
   const bookingLink = config.booking && config.booking.link ? config.booking.link : "";
   
-  return "🌿 ¡Hola! Soy Verónica Espinosa Sánchez, Psicóloga - Mentora\n\n" +
-         "*1️⃣* Trayectoria: Verónica Espinosa e Isabella Matovelle\n" +
-         "*2️⃣* Horarios y costo\n" +
-         "*3️⃣* ¿Qué es la Psicoterapia Cognitiva individual-pareja-familiar y talleres?\n" +
-         "*4️⃣* Diagnóstico Psicológico-Neuropsicológico\n" +
-         "*5️⃣* Estimulación Cognitiva\n" +
-         "*6️⃣* Peritajes\n" +
-         "*7️⃣* ¿Lo positivo del zoom?\n" +
-         "*8️⃣* Citas: " + bookingLink + "\n\n" +
+  return "✨ ¡Hola! Soy Verónica Espinosa Sánchez, de MentExperta\n\n" +
+         "¿Te gustaría conocer sobre nuestros servicios?\n\n" +
+         "1️⃣ Trayectoria: Verónica Espinosa Sánchez & Isabella Matovelle\n" +
+         "2️⃣ Horarios y costos\n" +
+         "3️⃣ Psicoterapia Cognitiva: individual · pareja · familiar\n" +
+         "4️⃣ Talleres: autoestima · comunicación · liderazgo\n" +
+         "5️⃣ Evaluación Psicológica y Neuropsicológica\n" +
+         "6️⃣ Estimulación Cognitiva\n" +
+         "7️⃣ Peritajes\n" +
+         "8️⃣ Ventajas de las sesiones por Zoom\n" +
+         "9️⃣ Reservar cita & formas de pago\n" +
+         "🔟 Dirección en Ecuador\n\n" +
          "🔒 *Confidencialidad garantizada*\n" +
-         "💳 *Pagos:* Transferencia, DeUna, Payphone PayPal\n\n"
+         "💳 *Pagos:* Transferencia, DeUna, Payphone PayPal\n\n" +
+         "✨ *Envía cualquier número (1-10) para más información*"
 }
 
 function getMenuResponse(option) {
@@ -197,6 +201,7 @@ function getMenuResponse(option) {
   switch(option) {
     case "1":
       return "👩‍⚕️ *Trayectoria Profesional*\n\n" +
+             "*Verónica Espinosa Sánchez & Isabella Matovelle*\n\n" +
              "*Verónica Espinosa Sánchez*\n" +
              "• Psicóloga Clínica con más de 28 años de experiencia\n" +
              "• Especializada en Psicoterapia Cognitiva (Albert Ellis Institute - NY)\n" +
@@ -206,7 +211,7 @@ function getMenuResponse(option) {
              "*Isabella Matovelle*\n" +
              "• Psicóloga colaboradora\n" +
              "• Especialista en terapias complementarias\n\n" +
-             "✨ *Envía cualquier número (1-8) para más información*";
+             "✨ *Envía cualquier número (1-10) para más información*";
 
     case "2":
       return "⏰ *Horarios y Costos*\n\n" +
@@ -214,35 +219,49 @@ function getMenuResponse(option) {
              "*💰 Tarifas:*\n" + clinicPrices + "\n\n" +
              "*📍 Ubicación:*\n" + clinicAddress + "\n\n" +
              "*☎️ Contacto:*\n" + clinicPhone + "\n" + clinicEmail + "\n\n" +
-             "✨ *Envía cualquier número (1-8) para más información*";
+             "✨ *Envía cualquier número (1-10) para más información*";
 
     case "3":
       return "🧠 *Psicoterapia Cognitiva*\n\n" +
              "*Individual:* Identifica y modifica pensamientos que influyen en emociones y comportamientos. Técnicas claras para generar cambios reales en ansiedad, depresión, estrés.\n\n" +
+             "*Técnicas utilizadas:*\n" +
+             "✅ Comprender la conexión pensamiento–emoción–conducta\n\n" +
              "*Pareja:* Mejora la comunicación, resuelve conflictos y establece metas claras en la relación.\n\n" +
              "*Familiar:* Fortalece vínculos familiares y resuelve dinámicas conflictivas.\n\n" +
-             "*Talleres:* Grupos terapéuticos especializados en temas específicos.\n\n" +
              "📋 *Primera sesión:* Evaluación inicial, explicación del proceso y resolución de dudas.\n\n" +
-             "✨ *Envía cualquier número (1-8) para más información*";
+             "✨ *Envía cualquier número (1-10) para más información*";
 
     case "4":
-      return "📋 *Diagnóstico Psicológico y Neuropsicológico*\n\n" +
-             "*Diagnóstico Psicológico:*\n" +
+      return "🎯 *Talleres Especializados*\n\n" +
+             "*Talleres disponibles:*\n" +
+             "• Autoestima y confianza personal\n" +
+             "• Comunicación efectiva\n" +
+             "• Liderazgo y desarrollo personal\n" +
+             "• Manejo de estrés y ansiedad\n" +
+             "• Relaciones interpersonales\n\n" +
+             "*Modalidad:* Grupos terapéuticos especializados\n" +
+             "*Duración:* Variable según el taller\n" +
+             "*Beneficios:* Aprendizaje grupal y apoyo mutuo\n\n" +
+             "✨ *Envía cualquier número (1-10) para más información*";
+
+    case "5":
+      return "📋 *Evaluación Psicológica y Neuropsicológica*\n\n" +
+             "*Evaluación Psicológica:*\n" +
              "• Estado emocional y personalidad\n" +
              "• Relaciones interpersonales\n" +
              "• Evaluación de bullying\n" +
              "• Orientación vocacional\n" +
              "• Trastornos de conducta\n" +
              "• Modalidades: Presencial y Online\n\n" +
-             "*Diagnóstico Neuropsicológico:*\n" +
+             "*Evaluación Neuropsicológica:*\n" +
              "• Entrevista clínica especializada\n" +
              "• Pruebas originales y validadas\n" +
              "• Informe detallado con recomendaciones\n" +
              "• 2-4 sesiones presenciales en Quito\n\n" +
-             "✨ *Envía cualquier número (1-8) para más información*";
+             "✨ *Envía cualquier número (1-10) para más información*";
 
-    case "5":
-      return "🧠 *Estimulación y Rehabilitación Cognitiva*\n\n" +
+    case "6":
+      return "🧠 *Estimulación Cognitiva*\n\n" +
              "*Áreas de trabajo:*\n" +
              "• Atención y concentración\n" +
              "• Memoria (corto y largo plazo)\n" +
@@ -254,10 +273,10 @@ function getMenuResponse(option) {
              "• Decedario PRO\n" +
              "• Planes personalizados\n\n" +
              "*Dirigido a:* Personas con deterioro cognitivo, lesiones cerebrales, o que deseen mantener y mejorar sus capacidades mentales.\n\n" +
-             "✨ *Envía cualquier número (1-8) para más información*";
+             "✨ *Envía cualquier número (1-10) para más información*";
 
-    case "6":
-      return "⚖️ *Peritajes Psicológicos*\n\n" +
+    case "7":
+      return "⚖️ *Peritajes*\n\n" +
              "*Servicios especializados:*\n" +
              "• Peritajes psicológicos forenses\n" +
              "• Evaluaciones neuropsicológicas legales\n" +
@@ -268,10 +287,10 @@ function getMenuResponse(option) {
              "• Metodología científica rigurosa\n" +
              "• Experiencia en el ámbito legal\n\n" +
              "*¿Necesitas un peritaje?* Agenda una primera cita para coordinar el proceso.\n\n" +
-             "✨ *Envía cualquier número (1-8) para más información*";
+             "✨ *Envía cualquier número (1-10) para más información*";
 
-    case "7":
-      return "💻 *Ventajas de las Sesiones por Zoom*\n\n" +
+    case "8":
+      return "💻 *Ventajas de las sesiones por Zoom*\n\n" +
              "*✅ Eficacia comprobada:*\n" +
              "La evidencia científica muestra eficacia similar entre terapia virtual y presencial.\n\n" +
              "*✅ Comodidad y accesibilidad:*\n" +
@@ -284,22 +303,37 @@ function getMenuResponse(option) {
              "• Privacidad garantizada\n" +
              "• Mismo nivel profesional\n\n" +
              "*🌐 Horarios Zoom:* Lun-Vie 14:30-18:30; Dom solo urgencias\n\n" +
-             "✨ *Envía cualquier número (1-8) para más información*";
+             "✨ *Envía cualquier número (1-10) para más información*";
 
-    case "8":
-      return "📅 *Agendar Cita*\n\n" +
+    case "9":
+      return "📅 *Reservar cita & formas de pago*\n\n" +
              "*Para agendar tu sesión necesito:*\n" +
              "• Nombre completo\n" +
              "• Ciudad/País de residencia\n" +
              "• Modalidad preferida (Presencial/Zoom)\n" +
              "• 2 opciones de día y horario\n" +
              "• Motivo de consulta (breve)\n\n" +
-             "*🔗 Agenda directa:* " + bookingLink + "\n\n" +
-             "*📍 Presencial:* 8:30-12:30 | Sáb 8:30-11:30\n" +
-             "*🌐 Online:* 14:30-18:30 | Dom solo urgencias\n" +
-             "*⏱️ Duración:* 45 minutos | Frecuencia semanal\n\n" +
+             "📸 Instagram: https://www.instagram.com/veronica_espinosa_sanchez/\n" +
+             "💼 LinkedIn: https://www.linkedin.com/in/veronicaespinosasanchez/\n\n" +
+             "🔗 Agenda Verónica: " + bookingLink + "\n" +
+             "💳 Transferencia · DeUna · PayPhone · PayPal\n\n" +
+             "ADOLESCENTES · ADULTOS · PAREJAS · FAMILIAS\n" +
+             "Español · inglés · francés intermedio\n\n" +
+             "Agenda Isabella (virtual): https://wa.me/34664589316\n" +
              "Si no ves un horario a tu medida, escríbeme y lo ajustamos.\n\n" +
-             "✨ *Envía cualquier número (1-8) para más información*";
+             "✨ *Envía cualquier número (1-10) para más información*";
+
+    case "10":
+      return "📍 *Dirección en Ecuador*\n\n" +
+             "*Ubicación:*\n" + clinicAddress + "\n\n" +
+             "*📞 Contacto:*\n" + clinicPhone + "\n" + clinicEmail + "\n\n" +
+             "*🕐 Horarios presenciales:*\n" +
+             "Lun-Vie: 8:30-12:30\nSáb: 8:30-11:30\n\n" +
+             "*🌐 Horarios virtuales:*\n" +
+             "Lun-Vie: 14:30-18:30\nDom: solo urgencias\n\n" +
+             "*🚗 Cómo llegar:*\n" +
+             "Hospital de los Valles, Cumbayá\nConsultorio 302 (junto Scala)\n\n" +
+             "✨ *Envía cualquier número (1-10) para más información*";
 
     default:
       return null;
@@ -309,8 +343,8 @@ function getMenuResponse(option) {
 function faq(raw) {
   const q = normalize(raw);
 
-  // Check for menu option numbers FIRST
-  if (/^[1-8]$/.test(raw.trim())) {
+  // Check for menu option numbers FIRST (now including 9 and 10)
+  if (/^(10|[1-9])$/.test(raw.trim())) {
     return getMenuResponse(raw.trim());
   }
 
@@ -326,35 +360,43 @@ function faq(raw) {
   }
 
   // Quick responses for specific keywords - route to menu sections
-  if (/(precio|costo|tarifa|cuanto vale|cuanto cuesta|horario|hora|disponibilidad|agenda|turno|cuando puedes|direccion|donde|ubicacion|como llegar|mapa|maps|hospital de los valles|cumbaya)/.test(q)) {
+  if (/(precio|costo|tarifa|cuanto vale|cuanto cuesta|horario|hora|disponibilidad|agenda|turno|cuando puedes)/.test(q)) {
     return getMenuResponse("2");
   }
 
-  if (/(agendar|reservar|cita|turno|zoom|presencial)/.test(q)) {
-    return getMenuResponse("8");
+  if (/(direccion|donde|ubicacion|como llegar|mapa|maps|hospital de los valles|cumbaya)/.test(q)) {
+    return getMenuResponse("10");
+  }
+
+  if (/(agendar|reservar|cita|turno|zoom|presencial|instagram|linkedin|agenda|isabella)/.test(q)) {
+    return getMenuResponse("9");
   }
 
   if (/(terapia cognitiva|psicoterapia|que es la terapia)/.test(q)) {
     return getMenuResponse("3");
   }
 
-  if (/(diagnostico|evaluacion|test|pruebas)/.test(q)) {
+  if (/(talleres|autoestima|comunicacion|liderazgo)/.test(q)) {
     return getMenuResponse("4");
   }
 
-  if (/(estimulacion|rehabilitacion|cognitiva|memoria|atencion)/.test(q)) {
+  if (/(diagnostico|evaluacion|test|pruebas|neuropsicolog)/.test(q)) {
     return getMenuResponse("5");
   }
 
-  if (/(peritaje|legal|forense|judicial)/.test(q)) {
+  if (/(estimulacion|rehabilitacion|cognitiva|memoria|atencion)/.test(q)) {
     return getMenuResponse("6");
   }
 
-  if (/(zoom|virtual|online|videollamada)/.test(q)) {
+  if (/(peritaje|legal|forense|judicial)/.test(q)) {
     return getMenuResponse("7");
   }
 
-  if (/(trayectoria|experiencia|quien eres|curriculum|sobre ti)/.test(q)) {
+  if (/(zoom|virtual|online|videollamada|ventajas)/.test(q)) {
+    return getMenuResponse("8");
+  }
+
+  if (/(trayectoria|experiencia|quien eres|curriculum|sobre ti|isabella|matovelle)/.test(q)) {
     return getMenuResponse("1");
   }
 
@@ -367,7 +409,7 @@ exports.whatsappWebhook = onRequest((req, res) => {
   res.set('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'GET') {
-    res.status(200).send('OK - WhatsApp Bot is running on Firebase Functions (Simplified Version)');
+    res.status(200).send('OK - WhatsApp Bot is running on Firebase Functions (Updated Version)');
     return;
   }
 
@@ -443,5 +485,5 @@ exports.whatsappWebhook = onRequest((req, res) => {
 });
 
 exports.healthCheck = onRequest((req, res) => {
-  res.status(200).send('OK - WhatsApp Bot is running on Firebase Functions (Simplified)');
+  res.status(200).send('OK - WhatsApp Bot is running on Firebase Functions (Updated)');
 });

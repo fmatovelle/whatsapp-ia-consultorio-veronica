@@ -70,6 +70,7 @@ function isIgnored(env, from, waId) {
 // ===== Prompt del sistema =====
 const SYS = (env) => `
 Eres la psicóloga clínica Verónica (Consultorio: "${env.CLINIC_NAME}", Quito — Hospital de los Valles, Cumbayá).
+Trayectoria Profesional: Verónica Espinosa Sánchez & Isabella Matovelle.
 Responde SIEMPRE en primera persona, con calidez y brevedad (2—4 líneas). Usa emojis de forma natural y moderada (🌿✨🧠🤝😊).
 Objetivo: resolver dudas y motivar a agendar una cita presencial u online por Zoom.
 
@@ -81,6 +82,10 @@ Datos:
 • Servicios: ${env.CLINIC_SERVICES}
 • Precios: ${env.CLINIC_PRICES}
 • Emergencias: ${env.EMERGENCY_DISCLAIMER}
+
+Redes Sociales:
+• 📸 Instagram: https://www.instagram.com/veronica_espinosa_sanchez/
+• 💼 LinkedIn: https://www.linkedin.com/in/veronicaespinosasanchez/
 
 Estilo:
 • Cercano y empático; sin diagnósticos por chat.
@@ -103,7 +108,8 @@ const stripLead = (t = "") =>
 function footer(env) {
   const f = (env.BOOKING_FOOTER || "").replace(/\\n/g, "\n").trim();
   return f || (
-    `\n\n📅 Reserva aquí: ${env.BOOKING_LINK}\n` +
+    `\n\n📅 Agenda Verónica: ${env.BOOKING_LINK}\n` +
+    `📅 Agenda Isabella (virtual): https://wa.me/34664589316\n` +
     `🏠 Presencial 8:30—12:30 | 🌐 Online 14:30—18:30\n` +
     `🕐 Duración: 45 minutos | Frecuencia semanal\n` +
     `Si no ves un horario a tu medida, escríbeme y lo ajustamos.`
@@ -135,7 +141,7 @@ function faq(raw, env, showBooking = false) {
     return `📍 Estoy en el Hospital de los Valles (Cumbayá). ${env.CLINIC_ADDRESS}\nTel: ${env.CLINIC_PHONE} · Email: ${env.CLINIC_EMAIL}${booking}`;
 
   if (/(quien eres|tu experiencia|sobre ti|sobre usted|conocerte|perfil|trayectoria)/.test(q))
-    return `✨ Soy psicóloga clínica especializada en psicoterapia cognitiva (Albert Ellis Institute — NY) con más de 28 años de experiencia. Acompaño a adolescentes y adultos; también realizo formación clínica y peritajes. Atiendo en Quito y por Zoom 🌐.${booking}`;
+    return `✨ Soy psicóloga clínica especializada en psicoterapia cognitiva (Albert Ellis Institute — NY) con más de 28 años de experiencia. Acompaño a adolescentes y adultos; también realizo formación clínica y peritajes. Atiendo en Quito y por Zoom 🌐.\n\n📸 Instagram: https://www.instagram.com/veronica_espinosa_sanchez/\n💼 LinkedIn: https://www.linkedin.com/in/veronicaespinosasanchez/${booking}`;
 
   if (/(estimula|rehabilita).*cognit|neuronup/.test(q))
     return `🧠 Estimulación y Rehabilitación Cognitiva: atención, memoria, lenguaje, razonamiento y funciones ejecutivas. Uso NeuronUP, Decedario PRO y planes personalizados.${booking}`;
@@ -146,8 +152,8 @@ function faq(raw, env, showBooking = false) {
   if (/(diagnostico psicolog)/.test(q))
     return `Diagnóstico Psicológico:\n🧠 Evalúo estado emocional, personalidad, relaciones, bullying, orientación vocacional y trastornos de conducta.\n📋 Pruebas originales y validadas.\n📄 Informe con recomendaciones. Presencial y online.${booking}`;
 
-  if (/(terapia cognitiva|psicoterapia cognitiva|tcc|cognitivo)/.test(q))
-    return `🗣️ La psicoterapia cognitiva identifica y modifica pensamientos que influyen en cómo te sientes y actúas. Trabajo con técnicas claras para generar cambios reales.${booking}`;
+  if (/(terapia cognitiva|psicoterapia cognitiva|tcc|cognitivo|tecnicas)/.test(q))
+    return `🗣️ La psicoterapia cognitiva identifica y modifica pensamientos que influyen en cómo te sientes y actúas. Trabajo con técnicas claras para generar cambios reales.\n\n✅ Comprender la conexión pensamiento--emoción--conducta${booking}`;
 
   if (/(pareja|matrimonio|relacion).*sesion|primera sesion pareja|terapia de pareja|pareja$/.test(q))
     return `💞 Si buscas terapia de pareja, puedo acompañarles para mejorar la comunicación y fijar metas claras. ¿Te gustaría agendar una cita?${booking}`;

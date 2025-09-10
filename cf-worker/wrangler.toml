@@ -1,4 +1,4 @@
-﻿name = "veronica-whatsapp-bot"
+﻿name = "mentexperta-whatsapp-bot"
 main = "worker.mjs"
 compatibility_date = "2025-08-01"
 workers_dev = true
@@ -12,14 +12,43 @@ TYPING_MS_AI          = "1200"
 
 OPENAI_MODEL= "gpt-4o-mini"
 
-CLINIC_NAME      = "Consultorio Verónica Espinosa"
+CLINIC_NAME      = "MentExperta"
 CLINIC_ADDRESS   = "Edificio de Especialidades Médicas, Hospital de los Valles, Av. Interoceánica Km 12.5 y Florencia - Cumbayá, Consultorio 302 (junto Scala), Quito - Ecuador"
 CLINIC_PHONE     = "+593 2 2378987"
 CLINIC_EMAIL     = "veronica.espinosa@hospitaldelosvalles.com"
-CLINIC_HOURS     = "Presencial: Lun-Vie 08:30-12:30; Sáb 08:30-11:30 | Zoom: Lun-Vie 14:30-18:30; Dom solo urgencia"
-CLINIC_SERVICES  = "Psicoterapia cognitiva (ansiedad, depresión, estrés), terapia de pareja/familia, estimulación y rehabilitación cognitiva, diagnóstico psicológico/neuropsicológico"
-CLINIC_PRICES    = "Sesión individual US$70 (45–50 min); Paquete 4 sesiones US$240; Pareja/familia: se recomienda sesión doble"
+CLINIC_HOURS     = "Presencial: L-V 8:30-12:30, Sáb 8:30-11:30 | Online Zoom: L-V 14:30-18:30, Dom solo emergencias"
+CLINIC_SERVICES  = "Psicoterapia cognitiva (individual/pareja/familia), evaluación psicológica/neuropsicológica, estimulación cognitiva, peritajes, talleres autoestima/comunicación/liderazgo"
+CLINIC_PRICES    = "Sesión individual US$70 (45 min); Paquete 4 sesiones US$240; Talleres: $240/mes; Pareja/familia: 90 min primera sesión recomendada"
 EMERGENCY_DISCLAIMER = "Si estás en riesgo inminente o pensando en hacerte daño, busca ayuda de inmediato: 911 (Ecuador) o acude a la emergencia más cercana. Este canal no es para emergencias."
 BOOKING_LINK     = "https://calendar.app.google/Vc8gSzt5zGchZuqg9"
-BOOKING_FOOTER   = "📅 Reserva aquí: https://calendar.app.google/Vc8gSzt5zGchZuqg9\n📍 Presencial 8:30–12:30 | 🌐 Online 14:30–18:30\n🕒 Duración: 45 minutos | Frecuencia semanal\nSi no ves un horario a tu medida, escríbeme y lo ajustamos."
-IGNORE_WHATSAPPS = "+593997473279, +593981987017, +593997473279, +593981987017, +59891356475, +593999469419, +593999743955, +593988415727, +593982095826, +593998443055, +593994894041, +593979359673, +593999231897, +593984967724, +593999441915, +593982927948, +593987952839, +15415218829, +13135309490, +13054501067, +13474841026, +593992525559, +593983334333, +593984701205, +59322372954, +593991890192, +593999845189, +593998021349, +593994774803, +593958736419, +593984874755, +593994037120, +573113881859, +16026373826, +593998080798, +19105389068, +59322373400, +593983359653, +59325251, +593984451311, +593964014156, +593979093980, +34664589316, +593992165004, +593984586819, +5491136763050, +5491167468150, +593981916326, +593980928587, +593984498411, +593989503597, +593987067714, +593993433170, +593989406821, +593998737387, +17865370527, +593986157050, +593983083260, +593983379812, +593995871295, +593999800290, +593991361101, +593992522410, +593999813879, +593987369396, +593998108930, +593962849341, +593997214457, "
+BOOKING_FOOTER   = "🔗 Reserva Verónica: https://calendar.app.google/Vc8gSzt5zGchZuqg9\n📲 Isabella (jóvenes): https://wa.me/34664589316\n🏠 Presencial 8:30–12:30 | 🌐 Online 14:30–18:30\n💬 Cualquier duda, escríbeme directamente"
+
+# Números bloqueados actualizados
+IGNORE_WHATSAPPS = "+593997473279, +593981987017, +593997473279, +593981987017, +59891356475, +593999469419, +593999743955, +593988415727, +593982095826, +593998443055, +593994894041, +593979359673, +593999231897, +593984967724, +593999441915, +593982927948, +593987952839, +15415218829, +13135309490, +13054501067, +13474841026, +593992525559, +593983334333, +593984701205, +59322372954, +593991890192, +593999845189, +593998021349, +593994774803, +593958736419, +593984874755, +593994037120, +573113881859, +16026373826, +593998080798, +19105389068, +59322373400, +593983359653, +59325251, +593984451311, +593964014156, +593979093980, +34664589316, +593992165004, +593984586819, +5491136763050, +5491167468150, +593981916326, +593980928587, +593984498411, +593989503597, +593987067714, +593993433170, +593989406821, +593998737387, +17865370527, +593986157050, +593983083260, +593983379812, +593995871295, +593999800290, +593991361101, +593992522410, +593999813879, +593987369396, +593998108930, +593962849341, +593997214457"
+
+# Variables adicionales para MentExperta
+WHATSAPP_VERONICA = "+593984255556"
+WHATSAPP_ISABELLA = "+34664589316"
+AGENDA_VERONICA = "https://calendar.app.google/Vc8gSzt5zGchZuqg9"
+AGENDA_ISABELLA = "https://wa.me/34664589316"
+WEBSITE_URL = "https://mentexperta.com/"
+INSTAGRAM_HANDLE = "@veronica_espinosa_sanchez"
+GOOGLE_MAPS_LINK = "https://maps.app.goo.gl/q7Nqs4PngPGELuzS8"
+
+# Información de pagos
+PAYPAL_LINK = "https://paypal.me/vespinosasanchez"
+PAYPHONE_LINK = "https://payp.page.link/qWfy"
+BANCO_ECUADOR = "Banco Pichincha - Cta Cte: 3014717004"
+BANCO_ESPANA = "IBAN: ES98 0049 2352 03 28 1434 3918"
+TITULAR_CUENTA = "María Verónica Espinosa Sánchez"
+CEDULA_ECUADOR = "1704195500"
+
+# Para notificaciones de leads
+ENABLE_ADMIN_NOTIFY = "true"
+ADMIN_WHATSAPP = "+593984255556"
+
+# Variables que van como secretos (usar: wrangler secret put VARIABLE_NAME)
+# OPENAI_API_KEY
+# TWILIO_ACCOUNT_SID  
+# TWILIO_AUTH_TOKEN
+# TWILIO_WHATSAPP_FROM
