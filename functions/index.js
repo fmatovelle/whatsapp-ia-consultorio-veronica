@@ -173,21 +173,25 @@ function alreadyProcessed(sid) {
 function getMainMenu() {
   const bookingLink = config.booking && config.booking.link ? config.booking.link : "";
   
-  return "✨ ¡Hola! Soy Verónica Espinosa Sánchez, de MentExperta\n\n" +
-         "¿Te gustaría conocer sobre nuestros servicios?\n\n" +
-         "1️⃣ Trayectoria: Verónica Espinosa Sánchez & Isabella Matovelle\n" +
-         "2️⃣ Horarios y costos\n" +
-         "3️⃣ Psicoterapia Cognitiva: individual · pareja · familiar\n" +
-         "4️⃣ Talleres: autoestima · comunicación · liderazgo\n" +
+  return "🌿 *¡Hola! Soy Verónica Espinosa Sánchez, de MentExperta*\n\n" +
+         "Por favor dime tu nombre y accede a información importante hasta comunicarme directamente contigo:\n\n" +
+         "¿Te gustaría conocer sobre nuestros servicios? 👇\n\n" +
+         "1️⃣ Trayectoria Profesional\n" +
+         "2️⃣ Horarios y Costos\n" +
+         "3️⃣ Psicoterapia Cognitiva\n" +
+         "4️⃣ Talleres\n" +
          "5️⃣ Evaluación Psicológica y Neuropsicológica\n" +
          "6️⃣ Estimulación Cognitiva\n" +
          "7️⃣ Peritajes\n" +
-         "8️⃣ Ventajas de las sesiones por Zoom\n" +
-         "9️⃣ Reservar cita & formas de pago\n" +
-         "🔟 Dirección en Ecuador\n\n" +
-         "🔒 *Confidencialidad garantizada*\n" +
-         "💳 *Pagos:* Transferencia, DeUna, Payphone PayPal\n\n" +
-         "✨ *Envía cualquier número (1-10) para más información*"
+         "8️⃣ Ventajas Sesiones Zoom\n" +
+         "9️⃣ Agendar & Pagos\n" +
+         "🔟 Dirección Ecuador\n\n" +
+         "*ADOLESCENTES • ADULTOS • PAREJAS • FAMILIAS*\n" +
+         "Español • inglés • francés intermedio\n\n" +
+         "💳 Transferencia • DeUna • PayPhone • PayPal\n\n" +
+         "🔗 Reserva aquí: https://calendar.app.google/AYpn6gze1eeQV2icA\n\n" +
+         "✨ *Envía cualquier número (1-10) para más información:*\n\n";
+
 }
 
 function getMenuResponse(option) {
@@ -199,141 +203,159 @@ function getMenuResponse(option) {
   const bookingLink = config.booking && config.booking.link ? config.booking.link : "";
 
   switch(option) {
-    case "1":
-      return "👩‍⚕️ *Trayectoria Profesional*\n\n" +
-             "*Verónica Espinosa Sánchez & Isabella Matovelle*\n\n" +
-             "*Verónica Espinosa Sánchez*\n" +
-             "• Psicóloga Clínica con más de 28 años de experiencia\n" +
-             "• Especializada en Psicoterapia Cognitiva (Albert Ellis Institute - NY)\n" +
-             "• Atención a adolescentes y adultos\n" +
-             "• Formación clínica y peritajes psicológicos\n" +
-             "• Modalidades: Presencial (Quito) y Online (Zoom)\n\n" +
-             "*Isabella Matovelle*\n" +
-             "• Psicóloga colaboradora\n" +
-             "• Especialista en terapias complementarias\n\n" +
-             "✨ *Envía cualquier número (1-10) para más información*";
+case "1":
+  return "👩‍⚕️ *Trayectoria Profesional*\n\n" +
+         "*Verónica Espinosa Sánchez*\n" +
+         "• Psicóloga Clínica (28+ años de experiencia)\n" +
+         "• Neuropsicóloga, Master en Dirección Talento Humano\n" +
+         "• Perito Psicóloga acreditada ante CJI\n" +
+         "• Psicoterapia Cognitiva (Albert Ellis Institute, NY)\n\n" +
+         "*Isabella Matovelle Espinosa*\n" +
+         "• Psicóloga Clínica y Life Coach\n" +
+         "• Psicóloga juvenil\n" +
+         "• Especializada en adolescentes, jóvenes adultos y padres\n" +
+         "• Mirada profunda y juvenil\n\n" +
+         "💡 *Nuestro enfoque*: Ciencia + Empatía + Estrategia\n\n" +
+         "🌐 Web: https://mentexperta.com/\n" +
+         "📸 Instagram: https://www.instagram.com/veronica_espinosa_sanchez/\n" +
+         "💼 LinkedIn: https://www.linkedin.com/in/veronicaespinosasanchez/\n\n" +
+         "✅ *Agenda Verónica*: https://calendar.app.google/AYpn6gze1eeQV2icA\n\n"+
+         "*Agenda Isabella (virtual):* https://wa.me/34664589316 \n\n" +
+         "✨ *Envía cualquier número (1-10) para más información*";
+        
 
-    case "2":
-      return "⏰ *Horarios y Costos*\n\n" +
-             "*📅 Horarios:*\n" + clinicHours + "\n\n" +
-             "*💰 Tarifas:*\n" + clinicPrices + "\n\n" +
-             "*📍 Ubicación:*\n" + clinicAddress + "\n\n" +
-             "*☎️ Contacto:*\n" + clinicPhone + "\n" + clinicEmail + "\n\n" +
-             "✨ *Envía cualquier número (1-10) para más información*";
+case "2":
+  return "📅 *Horarios y Costos*\n\n" +
+         "*Presencial (Quito - Hospital de los Valles)*\n" +
+         "🕘 L-V 8:30 - 12:30 | Sáb 8:30 - 11:30\n\n" +
+         "*Online por Zoom*\n" +
+         "💻 L-V 14:30 - 18:30 | Domingo: solo emergencias\n\n" +
+         "💳 *Tarifas:*\n" +
+         "• Sesión individual: US$70\n" +
+         "• Paquete de 4 sesiones: US$240\n\n" +
+         "📅 *Agendar:*\n" +
+         "• Verónica: https://calendar.app.google/AYpn6gze1eeQV2icA\n" +
+         "• Isabella: https://wa.me/34664589316\n\n" +
+         "¿No encuentras el horario que te resulta mejor? ¡Escríbeme!\n\n" +
+         "✨ *Envía cualquier número (1-10) para más información*";
 
-    case "3":
-      return "🧠 *Psicoterapia Cognitiva*\n\n" +
-             "*Individual:* Identifica y modifica pensamientos que influyen en emociones y comportamientos. Técnicas claras para generar cambios reales en ansiedad, depresión, estrés.\n\n" +
-             "*Técnicas utilizadas:*\n" +
-             "✅ Comprender la conexión pensamiento–emoción–conducta\n\n" +
-             "*Pareja:* Mejora la comunicación, resuelve conflictos y establece metas claras en la relación.\n\n" +
-             "*Familiar:* Fortalece vínculos familiares y resuelve dinámicas conflictivas.\n\n" +
-             "📋 *Primera sesión:* Evaluación inicial, explicación del proceso y resolución de dudas.\n\n" +
-             "✨ *Envía cualquier número (1-10) para más información*";
 
-    case "4":
-      return "🎯 *Talleres Especializados*\n\n" +
-             "*Talleres disponibles:*\n" +
-             "• Autoestima y confianza personal\n" +
-             "• Comunicación efectiva\n" +
-             "• Liderazgo y desarrollo personal\n" +
-             "• Manejo de estrés y ansiedad\n" +
-             "• Relaciones interpersonales\n\n" +
-             "*Modalidad:* Grupos terapéuticos especializados\n" +
-             "*Duración:* Variable según el taller\n" +
-             "*Beneficios:* Aprendizaje grupal y apoyo mutuo\n\n" +
-             "✨ *Envía cualquier número (1-10) para más información*";
+case "3":
+  return "🧠 *Psicoterapia Cognitiva*\n\n" +
+         "*INDIVIDUAL • PAREJA • FAMILIAR*\n\n" +
+         "✅ Identifica y modifica pensamientos/creencias negativas que afectan emociones y conductas\n" +
+         "✅ Técnicas: reestructuración cognitiva, habilidades de afrontamiento\n" +
+         "✅ Comprender la conexión pensamiento–emoción–conducta\n\n" +
+         "⏱️ *Duración:*\n" +
+         "• Individual: 45 min\n" +
+         "• Pareja/familia: 90 min (primera sesión recomendada)\n\n" +
+         "📅 *Agendar:*\n" +
+         "• Verónica: https://calendar.app.google/AYpn6gze1eeQV2icA\n" +
+         "• Isabella: https://wa.me/34664589316\n\n" +
+         "✨ *Envía cualquier número (1-10) para más información*";
 
-    case "5":
-      return "📋 *Evaluación Psicológica y Neuropsicológica*\n\n" +
-             "*Evaluación Psicológica:*\n" +
-             "• Estado emocional y personalidad\n" +
-             "• Relaciones interpersonales\n" +
-             "• Evaluación de bullying\n" +
-             "• Orientación vocacional\n" +
-             "• Trastornos de conducta\n" +
-             "• Modalidades: Presencial y Online\n\n" +
-             "*Evaluación Neuropsicológica:*\n" +
-             "• Entrevista clínica especializada\n" +
-             "• Pruebas originales y validadas\n" +
-             "• Informe detallado con recomendaciones\n" +
-             "• 2-4 sesiones presenciales en Quito\n\n" +
-             "✨ *Envía cualquier número (1-10) para más información*";
+case "4":
+  return "✨ *Talleres*\n\n" +
+         "*Autoestima, Comunicación y Liderazgo*\n\n" +
+         "📅 Inicio: primer jueves de cada mes - Online\n" +
+         "👥 Grupos: 4 personas (precio especial)\n" +
+         "⏰ 1.5 h semanales\n" +
+         "💰 $240/mes\n\n" +
+         "📧 Escríbeme para coordinar tu participación\n\n" +
+         "✨ *Envía cualquier número (1-10) para más información*";
 
-    case "6":
-      return "🧠 *Estimulación Cognitiva*\n\n" +
-             "*Áreas de trabajo:*\n" +
-             "• Atención y concentración\n" +
-             "• Memoria (corto y largo plazo)\n" +
-             "• Lenguaje y comunicación\n" +
-             "• Razonamiento lógico\n" +
-             "• Funciones ejecutivas\n\n" +
-             "*Herramientas especializadas:*\n" +
-             "• NeuronUP (plataforma digital)\n" +
-             "• Decedario PRO\n" +
-             "• Planes personalizados\n\n" +
-             "*Dirigido a:* Personas con deterioro cognitivo, lesiones cerebrales, o que deseen mantener y mejorar sus capacidades mentales.\n\n" +
-             "✨ *Envía cualquier número (1-10) para más información*";
+case "5":
+  return "🧠 *Evaluación Psicológica y Neuropsicológica*\n\n" +
+         "*NIÑOS, ADOLESCENTES Y ADULTOS*\n\n" +
+         "*Áreas evaluadas:*\n" +
+         "✅ Trastornos emocionales y de conducta: ansiedad, depresión, TOC, TEPT\n" +
+         "✅ Trastornos de la Personalidad\n" +
+         "✅ Personalidad y vínculos familiares/sociales\n" +
+         "✅ Bullying y acoso laboral\n" +
+         "✅ Orientación vocacional\n" +
+         "✅ Funcionamiento cognitivo\n\n" +
+         "*Proceso*: Entrevista + Pruebas originales (validez internacional) + Informe escrito\n\n" +
+         "💬 Solicita niveles de evaluación y precios\n\n" +
+         "Agenda Verónica: Terapia\n" +
+         "https://calendar.app.google/AYpn6gze1eeQV2icA\n\n" +
+         "✨ *Envía cualquier número (1-10) para más información*";
 
-    case "7":
-      return "⚖️ *Peritajes*\n\n" +
-             "*Servicios especializados:*\n" +
-             "• Peritajes psicológicos forenses\n" +
-             "• Evaluaciones neuropsicológicas legales\n" +
-             "• Pruebas originales y validadas\n\n" +
-             "*Características:*\n" +
-             "• Informes claros y precisos\n" +
-             "• Sustentables en audiencia\n" +
-             "• Metodología científica rigurosa\n" +
-             "• Experiencia en el ámbito legal\n\n" +
-             "*¿Necesitas un peritaje?* Agenda una primera cita para coordinar el proceso.\n\n" +
-             "✨ *Envía cualquier número (1-10) para más información*";
+case "6":
+  return "🧩 *Estimulación y Rehabilitación Cognitiva*\n\n" +
+         "*NIÑOS, ADOLESCENTES, ADULTOS Y ADULTOS MAYORES*\n\n" +
+         "*Áreas*: Atención, Memoria, Lenguaje, Funciones ejecutivas, Orientación, Velocidad de procesamiento, Habilidades visoespaciales\n\n" +
+         "*Herramientas especializadas:*\n" +
+         "📝 Papel y lápiz\n" +
+         "🎯 Decedario\n" +
+         "💻 NeuronUP (digital)\n\n" +
+         "*Dirigido a*: Deterioro cognitivo, lesiones cerebrales, trastornos del neurodesarrollo, TCE, ACV, TDAH, TEA, S. Down\n\n" +
+         "💬 Solicita niveles de evaluación y precios\n" +
+         "📅 Agenda: https://calendar.app.google/AYpn6gze1eeQV2icA\n\n" +
+         "Agenda: Terapia\n" +
+         "https://calendar.app.google/AYpn6gze1eeQV2icA\n\n" +
+         "✨ *Envía cualquier número (1-10) para más información*";
 
-    case "8":
-      return "💻 *Ventajas de las sesiones por Zoom*\n\n" +
-             "*✅ Eficacia comprobada:*\n" +
-             "La evidencia científica muestra eficacia similar entre terapia virtual y presencial.\n\n" +
-             "*✅ Comodidad y accesibilidad:*\n" +
-             "• Desde tu hogar u oficina\n" +
-             "• Ahorro de tiempo de traslado\n" +
-             "• Horarios flexibles\n" +
-             "• Acceso desde cualquier ciudad\n\n" +
-             "*✅ Confidencialidad:*\n" +
-             "• Plataforma segura\n" +
-             "• Privacidad garantizada\n" +
-             "• Mismo nivel profesional\n\n" +
-             "*🌐 Horarios Zoom:* Lun-Vie 14:30-18:30; Dom solo urgencias\n\n" +
-             "✨ *Envía cualquier número (1-10) para más información*";
+case "7":
+  return "⚖️ *Peritajes Psicológicos*\n\n" +
+         "Perito Psicóloga acreditada ante el Consejo de la Judicatura (1833413)\n\n" +
+         "*Servicios especializados:*\n" +
+         "• Peritajes psicológicos y neuropsicológicos\n" +
+         "• Pruebas originales y con validez internacional\n" +
+         "• Informes claros y sustentables\n" +
+         "• Comprobables científicamente en audiencia\n\n" +
+         "📧 Escríbeme para coordinar la evaluación\n" +
+         "📅 Agenda: https://calendar.app.google/AYpn6gze1eeQV2icA\n\n" +
+         "✨ *Envía cualquier número (1-10) para más información*";
 
-    case "9":
-      return "📅 *Reservar cita & formas de pago*\n\n" +
-             "*Para agendar tu sesión necesito:*\n" +
-             "• Nombre completo\n" +
-             "• Ciudad/País de residencia\n" +
-             "• Modalidad preferida (Presencial/Zoom)\n" +
-             "• 2 opciones de día y horario\n" +
-             "• Motivo de consulta (breve)\n\n" +
-             "📸 Instagram: https://www.instagram.com/veronica_espinosa_sanchez/\n" +
-             "💼 LinkedIn: https://www.linkedin.com/in/veronicaespinosasanchez/\n\n" +
-             "🔗 Agenda Verónica: " + bookingLink + "\n" +
-             "💳 Transferencia · DeUna · PayPhone · PayPal\n\n" +
-             "ADOLESCENTES · ADULTOS · PAREJAS · FAMILIAS\n" +
-             "Español · inglés · francés intermedio\n\n" +
-             "Agenda Isabella (virtual): https://wa.me/34664589316\n" +
-             "Si no ves un horario a tu medida, escríbeme y lo ajustamos.\n\n" +
-             "✨ *Envía cualquier número (1-10) para más información*";
+case "8":
+  return "💻 *Ventajas de las sesiones por Zoom*\n\n" +
+         "🎓 *Estudios confirman:*\n" +
+         "✅ Igual eficacia que la presencial (APA, 2020)\n" +
+         "✅ Incluso mayor bienestar a 3 meses (Univ. Zürich, 2014)\n\n" +
+         "⭐ *Beneficios adicionales:*\n" +
+         "• Comodidad desde tu hogar\n" +
+         "• Ahorro de tiempo de desplazamiento\n" +
+         "• Acceso desde cualquier lugar\n" +
+         "• Misma calidad profesional\n\n" +
+         "📅 *Agenda:*\n" +
+         "• Verónica: https://calendar.app.google/AYpn6gze1eeQV2icA\n" +
+         "• Isabella: https://wa.me/34664589316\n\n" +
+         "✨ *Envía cualquier número (1-10) para más información*";
 
-    case "10":
-      return "📍 *Dirección en Ecuador*\n\n" +
-             "*Ubicación:*\n" + clinicAddress + "\n\n" +
-             "*📞 Contacto:*\n" + clinicPhone + "\n" + clinicEmail + "\n\n" +
-             "*🕐 Horarios presenciales:*\n" +
-             "Lun-Vie: 8:30-12:30\nSáb: 8:30-11:30\n\n" +
-             "*🌐 Horarios virtuales:*\n" +
-             "Lun-Vie: 14:30-18:30\nDom: solo urgencias\n\n" +
-             "*🚗 Cómo llegar:*\n" +
-             "Hospital de los Valles, Cumbayá\nConsultorio 302 (junto Scala)\n\n" +
-             "✨ *Envía cualquier número (1-10) para más información*";
+case "9":
+  return "💳 *Agendar cita y Formas de Pago*\n\n" +
+         "📅 *Agenda:*\n" +
+         "• Verónica: https://calendar.app.google/AYpn6gze1eeQV2icA\n" +
+         "• Isabella: https://wa.me/34664589316\n\n" +
+         "💳 *Pagos:*\n" +
+         "🇪🇨 *Transferencia Ecuador*\n" +
+         "María Verónica Espinosa Sánchez | CI: 1704195500\n" +
+         "Banco Pichincha - Cta Cte: 3014717004\n\n" +
+         "🇪🇸 *Transferencia España*\n" +
+         "IBAN: ES98 0049 2352 03 28 1434 3918\n\n" +
+         "🌐 *PayPal*: https://paypal.me/vespinosasanchez\n" +
+         "📱 *PayPhone*: https://payp.page.link/qWfv\n" +
+         "💳 *Transferencia • DeUna • PayPhone • PayPal*\n\n" +
+         "Agenda Verónica\n" +
+         "https://calendar.app.google/AYpn6gze1eeQV2icA\n\n"+
+         "✨ *Envía cualquier número (1-10) para más información*";
+
+case "10":
+  return "📍 *Dirección en Ecuador*\n\n" +
+         "*Verónica Espinosa Sánchez - Consultorio*\n\n" +
+         "🏥 Edificio de Especialidades Médicas\n" +
+         "Hospital de los Valles\n" +
+         "Av. Interoceánica Km 12.5 y Florencia - Cumbayá\n" +
+         "Consultorio 302 (junto a Scala)\n\n" +
+         "📞 *Contacto:*\n" +
+         "🏥 Consultorio: +593 2 2378987\n" +
+         "📱 WhatsApp: +593 9 84255556\n" +
+         "📧 Email: veronica.espinosa@hospitaldelosvalles.com\n\n" +
+         "🚀 Google Maps: https://maps.app.goo.gl/q7Nqs4PngPGELuzS8\n\n" +
+         "📱 *Menú principal*: 🔢 Envía cualquier número (1-10)\n\n" +
+         "Terapia:\n" +
+         "https://calendar.app.google/AYpn6gze1eeQV2icA\n\n" +
+         "✨ Envía cualquier número (1-10) para más información";
 
     default:
       return null;
